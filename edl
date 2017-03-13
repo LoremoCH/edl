@@ -1,0 +1,36 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use JSON;
+use Digest::SHA;
+use File::Basename;
+#use NET::SCP;
+
+my $file = $ARGV[0];
+my $userhome =  $ENV{'HOME'};
+
+my $sha;
+open(FILE, $file);
+binmode(FILE);
+    $sha = Digest::SHA->new->addfile(*FILE)->hexdigest;
+    close(FILE);
+
+my $jsonfile = "$userhome/.config/edl.json";
+my $jsondata = do {
+   open(my $json_fh, "<:encoding(UTF-8)", $jsonfile)
+      or die("Can't open \$jsonfile\": $!\n");
+   local $/;
+   <$json_fh>
+};
+my $data = decode_json($jsondata);
+my $weburl = $data->{weburl};
+my $remotepath = $data->{remotepath};
+my $server = $data->{server};
+
+my $ext = (fileparse("$file", qr/\.[^.]*/))[2];
+
+system("/usr/bin/scp $file $server:$remotepath/$sha$ext");
+#scp("$file", "$server::$remotepath/$sha/$ext");
+
+print "Your file is now at $weburl/$sha$ext\n";
