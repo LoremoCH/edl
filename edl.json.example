@@ -1,0 +1,5 @@
+{
+  "weburl": "https://example.com/files",
+  "remotepath": "/var/www/html/edl/files",
+  "server": "example.com"
+}
