@@ -5,7 +5,7 @@ use warnings;
 use JSON;
 use Digest::SHA;
 use File::Basename;
-#use NET::SCP;
+use Net::SCP;
 
 my $file = $ARGV[0];
 my $userhome =  $ENV{'HOME'};
@@ -30,7 +30,8 @@ my $server = $data->{server};
 
 my $ext = (fileparse("$file", qr/\.[^.]*/))[2];
 
-system("/usr/bin/scp $file $server:$remotepath/$sha$ext");
-#scp("$file", "$server::$remotepath/$sha/$ext");
+my $scp = new Net::SCP;
+$scp->scp("$file", "$server:$remotepath/$sha$ext")
+or die $scp->{errstr};
 
 print "Your file is now at $weburl/$sha$ext\n";
