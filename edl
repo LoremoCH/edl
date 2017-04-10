@@ -6,20 +6,20 @@ use JSON;
 use Digest::SHA;
 use File::Basename;
 use Net::SCP;
+use Carp;
 
 my $file = $ARGV[0];
+unless (defined $file) {
+  croak("Usage: edl <file>");
+}
 my $userhome =  $ENV{'HOME'};
 
-my $sha;
-open(FILE, $file);
-binmode(FILE);
-    $sha = Digest::SHA->new->addfile(*FILE)->hexdigest;
-    close(FILE);
+my $sha = Digest::SHA->new->addfile($file)->hexdigest;
 
 my $jsonfile = "$userhome/.config/edl.json";
 my $jsondata = do {
-   open(my $json_fh, "<:encoding(UTF-8)", $jsonfile)
-      or die("Can't open \$jsonfile\": $!\n");
+   open(my $json_fh, "<", $jsonfile)
+      or die("Can't open \"$jsonfile\": $!\n");
    local $/;
    <$json_fh>
 };
@@ -28,9 +28,9 @@ my $weburl = $data->{weburl};
 my $remotepath = $data->{remotepath};
 my $server = $data->{server};
 
-my $ext = (fileparse("$file", qr/\.[^.]*/))[2];
+my $ext = (fileparse("$file", qr/\.[^.]*$/))[2];
 
-my $scp = new Net::SCP;
+my $scp = Net::SCP->new;
 $scp->scp("$file", "$server:$remotepath/$sha$ext")
 or die $scp->{errstr};
 
