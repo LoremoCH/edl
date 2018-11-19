@@ -8,13 +8,14 @@ web server to make it public accessible.
 libnet-scp-perl
 libdigest-sha-perl
 libjson-perl
+libjson-perl
 
 ## Example
-`host>./edl /tmp/somefile.zip
-
+```
+host:$ ./edl /tmp/somefile.zip
 Your file is now at https://example.com/files/17577d2f1fac1c7da5380523f87cd98ccd75bedb.zip
-
-host>`
+host:$
+```
 
 ## Configuration
 This script needs a configuration in json format. You can find
